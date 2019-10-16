@@ -1,0 +1,196 @@
+<html>
+
+<head>
+  <title>A1</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
+</head>
+
+<body>
+
+  <div id="app">
+
+    <div id="expense" class="inline">
+
+      <div id="eInputs"> <h2>Add Expense:</h2>
+        <br>
+        <p class="in">Item:&nbsp<input v-model="txtItem"></input></p>
+        <p class="in">Cost:&nbsp<input v-model="txtCost"></input></p>
+        <button v-on:click="addExpense(index)">Add</button>
+      </div>
+      <br>
+      <br>
+
+
+      <div> <h2>Expenses:</h2>
+        <br>
+
+        <table>
+
+          <tr>
+            <th>Expense</th>
+            <th>Cost</th>
+            <th>Remove</th>
+          </tr>
+
+          <tr v-for="(index,item) in inventory">
+            <td>{{item.desc}}</td>
+            <td>${{item.cost}}</td>
+            <td><input type="checkbox" value={{index}} v-Model="checkRow"></td>
+          </tr>
+
+        </table>
+        <br>
+        <p> Total Expense is ${{total.toFixed(2)}} </p>
+        <div id="eMessage">
+          <h6 v-if="(total>0) && (total<=100)">Low Priority</h6>
+          <h5 v-if="(total>100) && (total<=500)">Medium Priority</h5>
+          <h4 v-if="(total>500)">Warning: High Priority</h4>
+        </div>
+      </div>
+      <br>
+
+      <button v-on:click="deleteExepense()">Remove</button>
+      <p> test: {{ checkRow }} </p>
+
+    </div>
+
+    <div id="income" class="inline">
+      <div id="iInputs"> <h2>Add Income:</h2>
+        <br>
+        <p class="in">Source:&nbsp<input v-model="txtSource"></input></p>
+        <p class="in">Amount:&nbsp<input v-model="txtAmount"></input></p>
+        <button v-on:click="addIncome(index)">Add</button>
+      </div>
+      <br>
+      <br>
+
+      <div> <h2>Income:</h2>
+        <br>
+
+        <table>
+
+          <tr>
+            <th>Source</th>
+            <th>Amount</th>
+          </tr>
+
+          <tr v-for="(index,item) in income">
+            <td>{{item.desc}}</td>
+            <td>${{item.cost}}</td>
+          </tr>
+
+        </table>
+        <br>
+        <p> Total Income is ${{totalIn.toFixed(2)}} </p>
+        <p> Net Income is ${{netIn.toFixed(2)}} </p>
+        <div id="iMessage">
+          <h4 v-if="(netIn>0)">Profit</h4>
+          <h4 v-if="(netIn<0)">Loss</h4>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+</body>
+
+<script>
+
+var app = new Vue({
+
+  el: '#app',
+
+  data: {
+    inventory: [],
+    income:[],
+    total: 0,
+    totalIn:0,
+    netIn:0,
+    txtItem: "",
+    txtCost: "",
+    txtSource: "",
+    txtAmount: "",
+    checkRow: [],
+  },
+
+  methods: {
+
+    addExpense: function(index){
+      this.inventory.push({desc: this.txtItem, cost: Number(this.txtCost).toFixed(2)});
+      this.total += Number(this.txtCost);
+      this.netIn = this.totalIn - this.total;
+    },
+
+    addIncome: function(index){
+      this.income.push({desc: this.txtSource, cost: Number(this.txtAmount).toFixed(2)});
+      this.totalIn += Number(this.txtAmount);
+      this.netIn = this.totalIn - this.total;
+    },
+
+    deleteExepense: function(){
+      this.checkRow.sort(function(a, b){return b-a});
+      console.log(this.checkRow);
+      for (var k=0; k<this.checkRow.length; k++){
+        this.total -= this.inventory[this.checkRow[k]].cost;
+        this.inventory.splice(this.checkRow[k],1);
+      }
+      this.netIn = this.totalIn - this.total;
+      this.checkRow=[];
+      }
+
+  }
+})
+
+</script>
+
+<style>
+
+    body {
+      /*background-color: rgba(100,100,100,0.2);*/
+    }
+
+    #app {
+    }
+
+    div.inline {
+      float: left;
+      /*border: solid 1px black;*/
+      width: 40%;
+      margin: 20px;
+      padding: 20px;
+
+    }
+
+
+    table {
+      background-color: rgba(100,200,100,0.2);
+      text-align: center;
+      padding: 10px;
+    }
+
+    th {
+      text-align: center;
+      position: relative;
+      width:150px;
+      line-height:30px;
+    }
+
+    tr {
+      background-color: rgba(250,250,250,0.5);
+    }
+
+    p.in {
+      display: inline;
+      padding-right: 40px;
+
+    }
+
+    input {
+      border-radius: 5%;
+    }
+
+</style>
+
+</html>
